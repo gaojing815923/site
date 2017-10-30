@@ -38,6 +38,12 @@
 </template>
 
 <script>
+    import {
+        setItem
+    } from '../../../kits/localStoragekit.js'
+    import {
+        vm
+    } from "../../../kits/vm.js";
     export default {
         data() {
             return {
@@ -61,6 +67,12 @@
                         if (!toRouteName) {
                             toRouteName = 'goodslist';
                         }
+                        //写入localStorage的值为true  (key='islogin')
+                        localStorage.setItem('islogin', true);
+                        //触发vm.$emit通知layout.vue的监听方法
+                        vm.$emit('changeshow');
+
+
                         this.$router.push({
                             name: toRouteName
                         });

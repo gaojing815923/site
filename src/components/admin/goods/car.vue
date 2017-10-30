@@ -105,9 +105,9 @@
                 <div class="cart-foot clearfix">
                     <div class="right-box">
                         <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                        <router-link to="/site/shopping">
-                            <button class="submit">立即结算</button>
-                        </router-link>    
+                        <!-- <router-link to="/site/shopping"> -->
+                            <button class="submit" @click="toshopping">立即结算</button>
+                        <!-- </router-link>     -->
                     </div>
                 </div>
                 <!--购物车底部-->
@@ -121,7 +121,8 @@
 <script>
     import {
         getItem,
-        remoteItem
+        remoteItem,
+        updageItem
     } from '../../../kits/localStoragekit.js';
     //导入myinputNumber.vue的组件   myinput的名字是自己定义的
     import myinput from '../../subcom/myinputNumber.vue';
@@ -173,10 +174,31 @@
             }
         },
         methods: {
+            //单机下单结算时 触发的事件
+            toshopping() {
+                //  1.0 获取当前购物车表格中选中的商品id
+                var ids = '';
+                var idsArr = [];
+                this.values.forEach((item, index) => {
+                    if (item) {
+                        idsArr.push(this.list[index].id);
+                    }
+                })
+
+                ids = idsArr.join(',');
+                // 2.0 将这些商品id以逗号分隔的形式传递到/site/shopping/:ids
+                // params:将ids的值传递到路由规则shopping的ids参数中
+                this.$router.push({
+                    name: 'shopping',
+                    params: {
+                        ids: ids
+                    }
+                });
+            },
             //删除商品数据
             deldata(goodsid) {
                 // 删除this.list中这个商品数据
-                var index = 1;
+                var index = -1;
                 index = this.list.findIndex(function(item) {
                     return item.id == goodsid
                 });
@@ -195,7 +217,11 @@
                         item.buycount = obj.count;
                     }
                 });
-
+                // 修改localStorage中的当前商品的数量
+                updageItem({
+                    gid: obj.gid,
+                    count: obj.count
+                });
                 // 由于通过js代码修改的计算属性selletmentAmount方法中依赖的list中的某个属性的值是不会触发计算属性方法的重新执行的
                 this.list.push('');
                 this.list.pop();
@@ -231,6 +257,7 @@
             getcarlist() {
                 // 从localStorage中获取商品的id
                 var goodsObj = getItem();
+                console.log(goodsObj);
                 //遍历goodsObj中的所有数据中的键变成一个字符串用逗号分隔
                 var idArr = [];
                 for (var key in goodsObj) {
@@ -246,7 +273,8 @@
                         // 初始化返货的数组个数初始化values数组的个数， 值全部都是false
                         var goodsObj = getItem();
                         this.list.forEach((item, index) => {
-                            this.values[index] = this.isselectall;
+                            // this.values[index] = this.isselectall;
+                            this.values.push(false);
                             // this.values.push(false);
                             //将当前商品的数量赋值给接口中返回的buycount
                             item.buycount = goodsObj[item.id];

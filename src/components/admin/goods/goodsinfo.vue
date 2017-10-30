@@ -222,7 +222,7 @@
     import {
         vm,
         key
-    } from '../../../kits/vm.js';
+    } from '../../../kits/vm.js'
 
     //导入localStorage.js
     import {
@@ -238,7 +238,7 @@
 
         data() {
             return {
-                buyCount: 1,
+                buyCount: 0,
                 //用来控制商品详情和评论tab栏的切换
                 isContent: true,
                 txtContent: '', //提交评论内容
@@ -267,17 +267,20 @@
                 // vm.$emit(key, this.buyCount);
 
                 //通过vuex来触发事件  给购物车里面添加商品数据
-                this.$store.dispatch('changeBuyCount', this.buyCount)
-                    //将商品id和当前购买数量存储到localStorage中
+                this.$store.dispatch('changeBuyCount', this.buyCount);
+                //将商品id和当前购买数量存储到localStorage中
                 setItem({
                     gid: this.$route.params.goodsid,
                     bcount: this.buyCount
                 });
+                // console.log(setItem());
             },
+
             //给页面上的添加数量 添加事件，来测试数值是否会改变
             // buyCountChange(count) {
             //     console.log(this.buyCount)
             // },
+
             //单机某个页码是，触发的事件
             pageIndexChange(val) {
                 this.pageIndex = val;

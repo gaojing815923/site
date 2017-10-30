@@ -26,10 +26,17 @@ import goodsinfo from './components/admin/goods/goodsinfo.vue';
 import car from './components/admin/goods/car.vue';
 //导入下单组件
 import shopping from './components/admin/goods/shopping.vue';
+//导入下单成功的组件
+import pay from './components/admin/goods/pay.vue';
+//导入下单支付的组件
+import payamount from './components/admin/goods/payamount.vue';
+//导入下单支付成功的组件
+import paysuccess from './components/admin/goods/paysuccess.vue';
 var router = new vueRouter({
     routes: [
         { name: 'default', path: '/', redirect: '/site' },
-        { name: 'layout', path: '/site', component: layout },
+        { name: 'payamount', path: '/site/payamount/:orderid/:amount', component: payamount },
+        { name: 'paysuccess', path: '/site/paysuccess', component: paysuccess },
         {
             name: 'layout',
             path: '/site',
@@ -39,7 +46,10 @@ var router = new vueRouter({
                 { name: 'goodslist', path: 'goodslist', component: goodslist },
                 { name: 'goodsinfo', path: 'goodsinfo/:goodsid', component: goodsinfo },
                 { name: 'car', path: 'car', component: car },
-                { name: 'shopping', path: 'shopping', component: shopping, meta: { islogin: true } }
+                { name: 'shopping', path: 'shopping/:ids', component: shopping, meta: { islogin: true } },
+                { name: 'pay', path: 'pay/:orderid', component: pay, meta: { islogin: true } },
+                { name: 'paysuccesspc', path: 'paysuccesspc', component: paysuccess },
+
             ]
         }
     ]
@@ -98,7 +108,7 @@ var state = {
 }
 var actions = {
     changeBuyCount({ commit }, parmsBuyCount) {
-        commit('changeBuyCount', parmsBuyCount)
+        commit('changeBuyCount', parmsBuyCount);
     }
 }
 var mutations = {
@@ -130,12 +140,12 @@ var getters = {
 
 //实例化一个store对象
 var store = new vuex.Store({
-        state,
-        actions,
-        mutations,
-        getters
-    })
-    //过滤器
+    state,
+    actions,
+    mutations,
+    getters
+});
+//过滤器
 Vue.filter('datafat', (input, string) => {
     var date = new Date(input);
     var year = date.getFullYear();

@@ -8,7 +8,12 @@
                 <a target="_blank" href="#"></a>
                 <a target="_blank" href="#"></a>
              </div>
-             <div id="menu" class="right-box"><a href="/login.html">登录</a><a href="/register.html">注册</a><strong>|</strong>
+             <div id="menu" class="right-box">
+                 <router-link v-if="!isvipshow" to="/site/login"> 登录</router-link>
+                <a v-if="!isvipshow" href="/register.html">注册</a>
+                <router-link v-if="isvipshow" to="/site/vip/center">会员中心</router-link>
+                <a v-if="isvipshow" href="javascript:void(0)" @click="logout">退出</a>
+                <strong>|</strong>
                  <router-link to="/site/car">
                     <i class="iconfont icon-cart"></i>
                     购物车(<span id="shoppingCartCount">{{this.$store.getters.getCount}}</span>)
@@ -51,6 +56,7 @@
 <script>
     //导入localStorage.js
     import {
+        getItem,
         setItem
     } from '../../kits/localStoragekit.js'
     //导入vm
@@ -91,9 +97,35 @@
     export default {
         data() {
             return {
-                buyCount: 0
+                buyCount: 0,
+                isvipshow: false
             }
         },
+        methods: {
+            logout() {
+                //通知服务器清空当前用户的session
+                this.$http.get('/site/account/logout').then(res => {
+                    //改变当前的isvipshow的值
+                    this.isvipshow = false;
+                    //单机退出的时候就退到登录页面
+                    // this.$router.push({
+                    //         name: 'login'
+                    //     })
+                    //将localStorage中的值修改成false
+                    localStorage.setItem('islogin', false);
+
+                });
+            },
+            checklogin() {
+                var islogin = localStorage.getItem('islogin');
+                if (islogin == "true") {
+                    this.isvipshow = true;
+                } else {
+                    this.isvipshow = false;
+                }
+            }
+        },
+
         mounted() {
             //通过导入vm.js来触发事件  给购物车里面添加商品数据
             // vm.$on(key, (buyCount) => {
@@ -107,6 +139,13 @@
             //     count++;
             // }
 
+            //监听changeshow这个事件
+            vm.$on('changeshow', () => {
+                //获取到localStorage中的key="islogin"对应的值
+                this.checklogin();
+            });
+            //当页面重刷新以后要去获取到localStorage中的这个登录状态，赋值给isvipshow
+            this.checklogin();
         }
     }
 </script>
@@ -115,4 +154,7 @@
     /* 导入样式的格式  @import url() */
     
     @import url('../../../statics/elementuiCss/index.css');
+    .menuhd ul li a span.out {
+        color: #fff;
+    }
 </style>
